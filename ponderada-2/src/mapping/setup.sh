@@ -1,17 +1,17 @@
-#!/bin/bash
+#!/bin/zsh
 
 # Inicializa o ambiente ROS 2
-source /opt/ros/humble/setup.bash
+source /opt/ros/humble/setup.zsh
 
 # Compila o pacote desejado
 colcon build --packages-select mapping
 
 # Inicializa o ambiente ROS 2
-source ./install/setup.bash
+source ./install/setup.zsh
 
 # Função para lançar o processo ROS e capturar o PID
 launch_ros_process() {
-  local use_sim_time_value=${1:-false}
+  local use_sim_time_value=${1:-true}
   ros2 launch mapping _launch.xml use_sim_time:=$use_sim_time_value &
   ros_pid=$!
   echo "ROS launch started with PID: $ros_pid"
@@ -29,6 +29,8 @@ handle_ctrl_c() {
     # Salva o mapa. Não precisa executar em background ou capturar o PID,
     # já que é a última ação antes do script terminar.
     ros2 run nav2_map_server map_saver_cli -f ./assets/map
+
+    ros2 run nav2_map_server map_saver_cli -f ./../navigation/src/assets/map/map
 
     # Encerra o processo ROS se ainda estiver em execução
     if kill -0 $ros_pid > /dev/null 2>&1; then
