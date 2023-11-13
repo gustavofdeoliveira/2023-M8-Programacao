@@ -2,7 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
-from geometry_messages.message import Pose
+from geometry_msgs.msg import Pose
 
 
 class Publisher(Node):
@@ -24,9 +24,9 @@ class Publisher(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    my_publisher = MyPublisher()
-    rclpy.spin(my_publisher)
-    my_publisher.destroy_node()
+    publisher = Publisher()
+    rclpy.spin(publisher)
+    publisher.destroy_node()
     rclpy.shutdown()
 
 

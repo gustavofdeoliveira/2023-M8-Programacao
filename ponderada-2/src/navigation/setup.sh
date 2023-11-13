@@ -6,6 +6,9 @@ source /opt/ros/humble/setup.zsh
 # Compila o pacote desejado
 colcon build --packages-select navigation
 
+# Adicionar um if para ver se o pacote de instalação foi criado
+
+
 # Inicializa o ambiente ROS 2
 source ./install/setup.zsh
 
@@ -20,13 +23,14 @@ launch_process(){
     else
         MAP_PATH=$1
     fi
-
-        ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:="$MAP_PATH" &
-        ros2 launch ./src/navigation/launch/navigation_launch.py &
+        local use_sim_time_value=${1:-true}
+        ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=$use_sim_time_value map:="$MAP_PATH" &
+        ros2 launch ./launch/navigation_launch.py & ros_pid=$!
 
 }
 
 handle_ctrl_c() {
+
     echo "CTRL+C pressionado."
 
     # Encerra o processo ROS se ainda estiver em execução

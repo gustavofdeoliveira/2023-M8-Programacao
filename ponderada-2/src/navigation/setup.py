@@ -24,8 +24,8 @@ setup(
     entry_points={
         'console_scripts': [
             "movement=navigation.movement:main",
-            "pose_queue=navigation.pose_queue:main",
-            "topic_publisher=navigation.topic_publisher:main"
+            "pose_queue=navigation.queue:main",
+            "topic_publisher=navigation.publisher:main"
         ],
     },
 )
