@@ -1,51 +1,28 @@
 #!/bin/zsh
 
-# Inicializa o ambiente ROS 2
-source /opt/ros/humble/setup.zsh
+echo "Updating packages..."
+# Update packages
+sudo apt-get update -y > /dev/null 2>&1
 
-# Compila o pacote desejado
-colcon build --packages-select navigation
+echo "Installing xterm..."
+# Install xterm
+sudo apt-get install -y xterm > /dev/null 2>&1
 
-# Adicionar um if para ver se o pacote de instalação foi criado
+echo "Building with colcon..."
+# Build with colcon
+colcon build > /dev/null 2>&1
 
+echo "Configuring environment..."
+# Configure environment
+source install/local_setup.zsh
 
-# Inicializa o ambiente ROS 2
-source ./install/setup.zsh
+echo "Runing the launch file..."
+# Launch the launch file
+ros2 launch navigation navigation_launch.py
 
-# Default map path
-DEFAULT_MAP_PATH="./assets/maps/map.yaml"
-
-launch_process(){
-# Check if a map path is provided
-    if [ -z "$1" ]; then
-        echo "No map path provided. Using the default map path: $DEFAULT_MAP_PATH"
-        MAP_PATH=$DEFAULT_MAP_PATH
-    else
-        MAP_PATH=$1
-    fi
-        local use_sim_time_value=${1:-true}
-        ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=$use_sim_time_value map:="$MAP_PATH" &
-        ros2 launch ./launch/navigation_launch.py & ros_pid=$!
-
-}
-
-handle_ctrl_c() {
-
-    echo "CTRL+C pressionado."
-
-    # Encerra o processo ROS se ainda estiver em execução
-    if kill -0 $ros_pid > /dev/null 2>&1; then
-        kill_ros_process
-    fi
-
-    exit 0
-}
 
 # Define o manipulador para SIGINT (CTRL+C)
 trap handle_ctrl_c SIGINT
-
-# Lança o processo ROS
-launch_process
 
 # Aguarda o processo ROS terminar
 wait $ros_pid

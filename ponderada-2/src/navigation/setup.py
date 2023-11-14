@@ -23,8 +23,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            "pose_queue=navigation.pose_queue:main",
             "movement=navigation.movement:main",
-            "pose_queue=navigation.queue:main",
+            "initial_pose=navigation.initial_pose:main",
             "topic_publisher=navigation.publisher:main"
         ],
     },
