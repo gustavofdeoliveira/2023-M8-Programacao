@@ -19,10 +19,3 @@ source install/local_setup.zsh
 echo "Runing the launch file..."
 # Launch the launch file
 ros2 launch navigation navigation_launch.py
-
-
-# Define o manipulador para SIGINT (CTRL+C)
-trap handle_ctrl_c SIGINT
-
-# Aguarda o processo ROS terminar
-wait $ros_pid

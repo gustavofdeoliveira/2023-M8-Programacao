@@ -1,6 +1,6 @@
 import os
-from setuptools import find_packages, setup
 from glob import glob
+from setuptools import find_packages, setup
 
 package_name = 'navigation'
 
@@ -12,21 +12,22 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*')))
+        (os.path.join('share', package_name, 'launch'), glob(
+            os.path.join('launch', '*launch.[pxy][yma]*')))
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='gustavo',
+    maintainer='Gustavo Ferreira',
     maintainer_email='gustavo.oliveira@sou.inteli.edu.br',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='Navigation package for the Turtlebot3 robot',
+    license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             "pose_queue=navigation.pose_queue:main",
-            "movement=navigation.movement:main",
+            "interface=navigation.interface:main",
             "initial_pose=navigation.initial_pose:main",
-            "topic_publisher=navigation.publisher:main"
+            "vallet=navigation.vallet:main",
         ],
     },
 )

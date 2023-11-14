@@ -1,62 +1,86 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Pose
-from nav2_simple_commander.robot_navigator import BasicNavigator
-from geometry_msgs.msg import PoseStamped
-from tf_transformations import quaternion_from_euler
 from std_msgs.msg import String
+from geometry_msgs.msg import Pose
+from geometry_msgs.msg import PoseStamped
+from navigation.publisher import Publisher
+from navigation.subscriber import Subscriber
+from tf_transformations import quaternion_from_euler
+from nav2_simple_commander.robot_navigator import BasicNavigator
+
+
+class NavigatorController(Node):
+    def __init__(self, navigator: BasicNavigator):
+        super().__init__("navigator_controller")
+        self.robot_status = Publisher(self, "status", "/status", String)
+        self.navigator = navigator
+
+    def publish_status(self, status):
+        message = String()
+        message.data = status
+        self.robot_status.publish(message)
+
+    def go_to_pose(self, pos_x, pos_y, rot_z):
+        goal_pose = self._create_pose_stamped(pos_x, pos_y, rot_z)
+        self.navigator.goToPose(goal_pose)
+
+    def is_task_complete(self):
+        return self.navigator.isTaskComplete()
+
+    def _create_pose_stamped(self, pos_x, pos_y, pos_z):
+        q_x, q_y, q_z, q_w = quaternion_from_euler(0.0, 0.0, pos_z)
+        pose = PoseStamped()
+        pose.header.frame_id = 'map'
+        pose.header.stamp = self.get_clock().now().to_msg()
+        pose.pose.position.x = pos_x
+        pose.pose.position.y = pos_y
+        pose.pose.position.z = pos_z
+        pose.pose.orientation.x = q_x
+        pose.pose.orientation.y = q_y
+        pose.pose.orientation.z = q_z
+        pose.pose.orientation.w = q_w
+        return pose
+
+    def destroy(self):
+        self.robot_status.destroy_pub()
+        self.destroy_node()
 
 
 class Movement(Node):
+    def __init__(self, navigator_controller: NavigatorController):
+        super().__init__("movement")
+        self.pose = Subscriber(self, "dequeue", "/dequeue", Pose)
+        self.pose.create_timer(1.0, self.timer_callback)
+        self.pose.create_sub(self.listener_callback)
+        self.navigator_controller = navigator_controller
 
-    def __init__(self, navigator):
-        super().__init__('movement')
-        self.publisher = self.create_publisher(String, 'status', 10)
-        self.subscription = self.create_subscription(
-            Pose,
-            'pose_queue',
-            self.listener_callback,
-            10
-        )
-        self.timer = self.create_timer(1.0, self.timer_callback)
-        self.navigator = navigator
-        self.subscription  # prevent unused variable warning
+    def listener_callback(self, message: Pose):
+        pos_x = message.position.x
+        pos_y = message.position.y
+        pos_z = message.position.z
+        self.navigator_controller.go_to_pose(pos_x, pos_y, pos_z)
 
-    def listener_callback(self, message):
-        position_x = message.position.x
-        position_y = message.position.y
-        rot_z = 0.0  # Adjust as needed
-        pose_destination = create_pose_stamped(self.navigator, position_x, position_y, rot_z)
-        self.navigator.goToPose(pose_destination)
-
-        
     def timer_callback(self):
-        busy_msg = String()
-        busy_msg.data = "Busy" if not self.navigator.isTaskComplete() else "Free"
-        self.publisher.publish(busy_msg)
+        if not self.navigator_controller.is_task_complete():
+            self.navigator_controller.publish_status("BUSY")
+        else:
+            self.navigator_controller.publish_status("FREE")
 
-def create_pose_stamped(navigator, position_x, position_y, rot_z):
-    q_x, q_y, q_z, q_w = quaternion_from_euler(0.0, 0.0, rot_z)
-    goal_pose = PoseStamped()
-    goal_pose.header.frame_id = 'map'
-    goal_pose.header.stamp = navigator.get_clock().now().to_msg()
-    goal_pose.pose.position.x = position_x
-    goal_pose.pose.position.y = position_y
-    goal_pose.pose.position.z = position_x
-    goal_pose.pose.orientation.x = q_x
-    goal_pose.pose.orientation.y = q_y
-    goal_pose.pose.orientation.z = q_z
-    goal_pose.pose.orientation.w = q_w
-    return goal_pose
+    def destroy(self):
+        self.pose.destroy_sub()
+        self.navigator_controller.destroy()
+        self.destroy_node()
 
 
 def main(args=None):
     rclpy.init(args=args)
     navigator = BasicNavigator()
-    navigator_node = Movement(navigator)
-    rclpy.spin(navigator_node)
-    navigator_node.destroy_node()
+    navigator_controller = NavigatorController(navigator)
+    movement = Movement(navigator_controller)
+    rclpy.spin(movement)
+    movement.destroy()
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()

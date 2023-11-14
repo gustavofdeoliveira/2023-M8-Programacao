@@ -1,32 +1,35 @@
-import rclpy
+from typing import Any
 from rclpy.node import Node
-from geometry_msgs.msg import Pose
 
 
-class Publisher(Node):
+class Publisher():
+    def __init__(self, node: Node, name: str,topic_name: str, topic_type: any):
+        self.node = node
+        self.name = name
+        self.publisher = None
+        self.topic_type = topic_type
+        self.topic_name = topic_name
 
-    def __init__(self):
-        super().__init__('topic_publisher')
-        self.publisher_ = self.create_publisher(Pose, 'topic_publisher', 10)
-        timer_period = 1  # seconds
-        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.create_pub()
 
-    def timer_callback(self):
-        message = Pose()
-        message.position.x = float(input('Enter x position: '))
-        message.position.y = float(input('Enter y position: '))
-        message.position.z = float(input('Enter z position: '))
-        self.publisher_.publish(message)
-        self.get_logger().info('Publishing Pose: x={}, y={}, z={}'.format(message.position.x, message.position.y, message.position.z))
+        self.node.get_logger().info(f"Publisher {self.name} created.")
 
+    def create_pub(self) -> None:
+        self.publisher = self.node.create_publisher(
+            self.topic_type, self.topic_name, 1000
+        )
 
-def main(args=None):
-    rclpy.init(args=args)
-    publisher = Publisher()
-    rclpy.spin(publisher)
-    publisher.destroy_node()
-    rclpy.shutdown()
+        self.node.get_logger().info(f"Publisher {self.name} connected.")
 
+    def create_timer(self, period: float, timer_callback: Any) -> None:
+        self.node.create_timer(period, timer_callback)
 
-if __name__ == '__main__':
-    main()
+        self.node.get_logger().info(f"Timer on {self.name} node created.")
+
+    def publish(self, message: any) -> None:
+        self.publisher.publish(message)
+        self.node.get_logger().info(f"Publishing {message} on {self.topic_name}")
+
+    def destroy_pub(self) -> None:
+        self.publisher.destroy()
+        self.node.get_logger().info(f"Publisher {self.name} disconnected.")

@@ -8,8 +8,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
     rviz_dir = get_package_share_directory('turtlebot3_navigation2')
-    map_file_path = '../assets/maps/map.yaml'
-
+    map_file_path = os.path.join(os.getcwd(), 'assets', 'map.yaml')
     rviz = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             rviz_dir + '/launch/navigation2.launch.py'),
@@ -37,21 +36,21 @@ def generate_launch_description():
         ),
         Node(
             package='navigation',
-            executable='movement',
+            executable='vallet',
             output='screen',
-            name="movement"
-        ),
-        Node(
-            package='navigation',
-            executable='topic_publisher',
-            output='screen',
-            name="topic_publisher",
+            name="vallet",
         ),
         Node(
             package='navigation',
             executable='pose_queue',
             output='screen',
             name="pose_queue",
-            ),
-            
+        ),
+        Node(
+            package='navigation',
+            executable='interface',
+            output='screen',
+            prefix="xterm -e",
+            name="interface"
+        ),
     ])

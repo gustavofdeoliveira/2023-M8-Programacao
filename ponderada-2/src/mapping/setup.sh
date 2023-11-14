@@ -11,8 +11,8 @@ source ./install/setup.zsh
 
 # Função para lançar o processo ROS e capturar o PID
 launch_ros_process() {
-  local use_sim_time_value=${1:-true}
-  ros2 launch mapping _launch.xml use_sim_time:=$use_sim_time_value &
+  local use_sim_time_value=${1:-false}
+  ros2 launch mapping _launch.xml use_sim_time:=False &
   ros_pid=$!
   echo "ROS launch started with PID: $ros_pid"
 }
@@ -30,7 +30,7 @@ handle_ctrl_c() {
     # já que é a última ação antes do script terminar.
     ros2 run nav2_map_server map_saver_cli -f ./assets/map
 
-    ros2 run nav2_map_server map_saver_cli -f ./../navigation/src/assets/map/map
+    ros2 run nav2_map_server map_saver_cli -f ./../navigation/src/assets/map
 
     # Encerra o processo ROS se ainda estiver em execução
     if kill -0 $ros_pid > /dev/null 2>&1; then
