@@ -11,8 +11,8 @@ source ./install/setup.zsh
 
 # Função para lançar o processo ROS e capturar o PID
 launch_ros_process() {
-  local use_sim_time_value=${1:-false}
-  ros2 launch mapping _launch.xml use_sim_time:=False &
+  local use_sim_time_value=${1:-true}
+  ros2 launch mapping _launch.xml use_sim_time:=$use_sim_time_value &
   ros_pid=$!
   echo "ROS launch started with PID: $ros_pid"
 }

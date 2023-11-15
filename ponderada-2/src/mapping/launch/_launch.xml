@@ -1,5 +1,7 @@
 <launch>
-  <arg name="use_sim_time" default="False" />
+  <arg name="use_sim_time" default="True" />
+
+  <include file="$(find-pkg-share turtlebot3_gazebo)/launch/turtlebot3_world.launch.py"/>
 
   <include file="$(find-pkg-share turtlebot3_cartographer)/launch/cartographer.launch.py">
     <arg name="use_sim_time" value="$(var use_sim_time)" />
