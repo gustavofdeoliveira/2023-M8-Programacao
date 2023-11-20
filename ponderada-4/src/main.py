@@ -1,21 +1,36 @@
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
+from langchain.llms import Ollama
+import gradio as gr
 
-load_dotenv()
+import subprocess
+
+def generate_text(prompt):
+    try:
+        ollama = Ollama(base_url='http://localhost:11434',model="dexter")
+        response = ollama(prompt)
+        print(response)
+        return response
+    except Exception as e:
+        return str(e)
+
+#Create the Gradio interface
+interface = gr.Interface(
+    fn=generate_text,
+    inputs=gr.Textbox(lines=2, placeholder="Enter your prompt here..."),
+    outputs="text"
+)
 
 
-def chat_with_gpt(prompt):
-    client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+def main():
+    script_path = './setup.sh'
 
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",  # ou outro modelo
-        messages=[
-            {"role": "system", "content": "Você é um especialista em Python"},
-            {"role": "user", "content": prompt},
-        ]
-    )
+    # Comando para abrir um novo terminal Xterm e executar o script
+    command = f"xterm -e 'bash {script_path}; read -p \"Pressione enter para fechar...\"'"
 
-    return response.choices[0].message['content']
+    # Executando o comando
+    subprocess.Popen(command, shell=True)
 
-print(chat_with_gpt("Explique para que serve o partial. Dê um exemplo"))
+    interface.launch(share=True)
+
+
+if __name__ == "__main__":
+    main()
