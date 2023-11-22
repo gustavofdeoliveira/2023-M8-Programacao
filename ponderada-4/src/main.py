@@ -1,35 +1,32 @@
-from langchain.llms import Ollama
+import random
 import gradio as gr
+from langchain.llms import Ollama
+from langchain.prompts import ChatPromptTemplate
+from langchain.schema.runnable import RunnableMap, RunnablePassthrough
 
-import subprocess
-
-def generate_text(prompt):
-    try:
-        ollama = Ollama(base_url='http://localhost:11434',model="dexter")
-        response = ollama(prompt)
-        print(response)
-        return response
-    except Exception as e:
-        return str(e)
-
-#Create the Gradio interface
-interface = gr.Interface(
-    fn=generate_text,
-    inputs=gr.Textbox(lines=2, placeholder="Enter your prompt here..."),
-    outputs="text"
+model = Ollama(model="dolphin2.2-mistral")
+prompt = ChatPromptTemplate.from_template(
+"""
+Now you are an occupational {safety agent} specialized in safety standards
+in industrial environments,in addition to knowing everything about epis and
+other subjects related to occupational safety and industrial environments
+that require a higher level of safety
+"""
 )
 
+chain = {"safety agent": RunnablePassthrough()} | prompt | model
+
+
+def response(message, history):
+    response = ""
+    for response_message in chain.stream(message):
+        response += response_message
+        yield response
 
 def main():
-    script_path = './setup.sh'
+    gradio = gr.ChatInterface(response).queue()
 
-    # Comando para abrir um novo terminal Xterm e executar o script
-    command = f"xterm -e 'bash {script_path}; read -p \"Pressione enter para fechar...\"'"
-
-    # Executando o comando
-    subprocess.Popen(command, shell=True)
-
-    interface.launch(share=True)
+    gradio.launch()
 
 
 if __name__ == "__main__":
