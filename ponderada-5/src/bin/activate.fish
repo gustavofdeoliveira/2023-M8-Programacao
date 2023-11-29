@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/gustavo/Documentos/Github/2023-M8-Programacao/ponderada-4/src"
+set -gx VIRTUAL_ENV "/home/gustavo/Documentos/Github/2023-M8-Programacao/ponderada-5/src"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
