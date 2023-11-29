@@ -9,8 +9,7 @@
 5. No terminal, ficará disponível para acessar: `http://127.0.0.1:7860`
 6. Agora é só mandar algum prompt pela interface do gradio
 
-Notas: Uma versão mais fraca foi escolhida para o ollama, pois a versão mais recente não estava processando os dados de forma rápida o suficiente.
-
+Notas: Uma versão mais fraca foi escolhida para o ollama, pois a versão mais recente não estava processando os dados de forma rápida o suficiente. O vídeo demo foi começado a gravar depois que o ollama já estava rodando e dando as respostas, porque o ollama demorou 12 minutos para processar os dados.
 
 ## Vídeo Demo
 
