@@ -1,2 +1,4 @@
-openai
+pathlib
 playsound
+openai
+python-dotenv

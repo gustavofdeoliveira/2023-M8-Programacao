@@ -2,10 +2,11 @@ import os
 from pathlib import Path
 from playsound import playsound
 import openai 
+from dotenv import load_dotenv
+    
+load_dotenv()
 
-openai.api_key=""
-
-print(openai.api_key)
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 def audio_to_text(audio_path):
@@ -45,7 +46,7 @@ def text_to_audio(text):
 
 def play_audio(audio_path):
    print("Playing audio...")
-   playsound(str(audio_path).replace('/', '\\'))
+   playsound(audio_path)
 
 def main():
     audio_file_path = "./media/test.mp3"
