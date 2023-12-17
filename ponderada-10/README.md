@@ -4,6 +4,8 @@
 
 Um projeto que gostaria de ter desenvolvido, seria um robô de auto serviço capaz de se locomover e interagir efetivamente com pessoas. Este conceito se diferencia significativamente dos projetos realizados anteriormente em nosso módulo, destacando-se por sua complexidade e custo elevado. O robô será projetado para operar autonomamente em ambientes do Inteli, como atêlies, mezani, e outros espaços de convivência. 
 
+![Alt text](image/1702836043797.png)
+
 ## Objetivo
 
 O objetivo principal do projeto é criar um robô que possa atuar como assistente autônomo, melhorando a eficiência e a interatividade em diferentes ambientes. Através de sua capacidade de locomoção e interação, espera-se que o robô ofereça uma experiência única e inovadora para os usuários, além de demonstrar a aplicabilidade prática das tecnologias de robótica e automação.
